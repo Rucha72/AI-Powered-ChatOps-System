@@ -1,7 +1,7 @@
 # 🤖 AI-Powered ChatOps System for DevOps Automation
 
 **Dissertation Project | BITS Pilani | MTech Software Engineering**
-Student: ** Vaidya Rucha Sandeep **
+Student: **Vaidya Rucha Sandeep**
 
 ---
 
