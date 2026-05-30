@@ -1,0 +1,110 @@
+[
+  {
+    "name": "payment-service",
+    "status": "healthy",
+    "version": "v3.1.2",
+    "replicas": {"desired": 3, "running": 3},
+    "uptime": "12d 4h",
+    "cpu_usage": "34%",
+    "memory_usage": "52%",
+    "last_deployed": "2026-01-20T10:00:00Z",
+    "owner": "payments-team",
+    "dependencies": ["postgres-db", "redis-cache", "notification-service"]
+  },
+  {
+    "name": "auth-service",
+    "status": "healthy",
+    "version": "v2.0.5",
+    "replicas": {"desired": 2, "running": 2},
+    "uptime": "5d 2h",
+    "cpu_usage": "21%",
+    "memory_usage": "40%",
+    "last_deployed": "2026-01-23T08:30:00Z",
+    "owner": "platform-team",
+    "dependencies": ["redis-cache", "postgres-db"]
+  },
+  {
+    "name": "order-service",
+    "status": "degraded",
+    "version": "v2.3.2",
+    "replicas": {"desired": 3, "running": 2},
+    "uptime": "0d 3h",
+    "cpu_usage": "67%",
+    "memory_usage": "71%",
+    "last_deployed": "2026-01-28T14:00:00Z",
+    "owner": "orders-team",
+    "dependencies": ["payment-service", "notification-service", "postgres-db"]
+  },
+  {
+    "name": "notification-service",
+    "status": "healthy",
+    "version": "v1.4.2",
+    "replicas": {"desired": 2, "running": 2},
+    "uptime": "8d 11h",
+    "cpu_usage": "15%",
+    "memory_usage": "38%",
+    "last_deployed": "2025-12-20T09:00:00Z",
+    "owner": "platform-team",
+    "dependencies": ["redis-cache"]
+  },
+  {
+    "name": "api-gateway",
+    "status": "healthy",
+    "version": "v1.8.0",
+    "replicas": {"desired": 2, "running": 2},
+    "uptime": "25d 6h",
+    "cpu_usage": "28%",
+    "memory_usage": "44%",
+    "last_deployed": "2026-01-03T21:00:00Z",
+    "owner": "platform-team",
+    "dependencies": ["auth-service", "order-service", "payment-service", "user-service"]
+  },
+  {
+    "name": "user-service",
+    "status": "healthy",
+    "version": "v4.0.1",
+    "replicas": {"desired": 3, "running": 3},
+    "uptime": "25d 5h",
+    "cpu_usage": "19%",
+    "memory_usage": "33%",
+    "last_deployed": "2026-01-03T20:45:00Z",
+    "owner": "platform-team",
+    "dependencies": ["postgres-db", "config-service"]
+  },
+  {
+    "name": "postgres-db",
+    "status": "healthy",
+    "version": "v14.5",
+    "replicas": {"desired": 1, "running": 1},
+    "uptime": "30d 0h",
+    "cpu_usage": "45%",
+    "memory_usage": "60%",
+    "last_deployed": "2025-12-01T00:00:00Z",
+    "owner": "infra-team",
+    "dependencies": []
+  },
+  {
+    "name": "redis-cache",
+    "status": "healthy",
+    "version": "v7.0",
+    "replicas": {"desired": 1, "running": 1},
+    "uptime": "15d 0h",
+    "cpu_usage": "10%",
+    "memory_usage": "55%",
+    "last_deployed": "2025-11-10T15:30:00Z",
+    "owner": "infra-team",
+    "dependencies": []
+  },
+  {
+    "name": "config-service",
+    "status": "healthy",
+    "version": "v1.1.0",
+    "replicas": {"desired": 1, "running": 1},
+    "uptime": "25d 4h",
+    "cpu_usage": "5%",
+    "memory_usage": "20%",
+    "last_deployed": "2026-01-03T20:20:00Z",
+    "owner": "infra-team",
+    "dependencies": []
+  }
+]

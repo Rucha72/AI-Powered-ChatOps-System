@@ -1,0 +1,106 @@
+[
+  {
+    "id": "INC-001",
+    "title": "Payment Service Outage",
+    "service": "payment-service",
+    "severity": "critical",
+    "status": "resolved",
+    "created_at": "2025-11-01T02:15:00Z",
+    "resolved_at": "2025-11-01T03:45:00Z",
+    "logs": [
+      "2025-11-01T02:15:00Z ERROR payment-service: Connection timeout to DB pool after 30s",
+      "2025-11-01T02:15:05Z ERROR payment-service: Max retries exceeded for transaction ID txn-88291",
+      "2025-11-01T02:16:00Z WARN  payment-service: Circuit breaker OPEN — downstream DB unreachable",
+      "2025-11-01T02:20:00Z ERROR postgres-db: Too many connections (max_connections=100 reached)",
+      "2025-11-01T02:22:00Z INFO  ops-team: Investigating DB connection pool exhaustion",
+      "2025-11-01T03:00:00Z INFO  ops-team: Increased max_connections to 200, restarted payment-service",
+      "2025-11-01T03:45:00Z INFO  payment-service: Service restored, transactions processing normally"
+    ],
+    "root_cause": "Database connection pool exhaustion due to a spike in concurrent transactions",
+    "resolution": "Increased max_connections in PostgreSQL config and restarted the service",
+    "tags": ["database", "connection-pool", "payment", "postgres"]
+  },
+  {
+    "id": "INC-002",
+    "title": "Auth Service High Latency",
+    "service": "auth-service",
+    "severity": "high",
+    "status": "resolved",
+    "created_at": "2025-11-10T14:00:00Z",
+    "resolved_at": "2025-11-10T15:30:00Z",
+    "logs": [
+      "2025-11-10T14:00:00Z WARN  auth-service: Response time > 2000ms for /api/login",
+      "2025-11-10T14:01:00Z ERROR auth-service: Redis cache MISS rate 95% — cache appears stale",
+      "2025-11-10T14:05:00Z ERROR auth-service: JWT validation taking 1800ms avg (normal: 50ms)",
+      "2025-11-10T14:10:00Z INFO  ops-team: Redis pod restarted unexpectedly, cache lost",
+      "2025-11-10T14:30:00Z INFO  ops-team: Redis pod back online, cache warming up",
+      "2025-11-10T15:30:00Z INFO  auth-service: Latency normalized to < 100ms"
+    ],
+    "root_cause": "Redis cache pod OOMKilled causing full cache eviction, forcing all auth requests to hit the database directly",
+    "resolution": "Increased Redis memory limit, added cache warming script on restart",
+    "tags": ["redis", "cache", "auth", "latency", "OOMKill"]
+  },
+  {
+    "id": "INC-003",
+    "title": "Order Service Deployment Failure",
+    "service": "order-service",
+    "severity": "medium",
+    "status": "resolved",
+    "created_at": "2025-12-05T10:30:00Z",
+    "resolved_at": "2025-12-05T11:00:00Z",
+    "logs": [
+      "2025-12-05T10:30:00Z INFO  CI/CD: Deployment pipeline triggered for order-service v2.3.1",
+      "2025-12-05T10:32:00Z ERROR CI/CD: Docker image build failed — missing dependency 'grpc==1.59.0'",
+      "2025-12-05T10:33:00Z ERROR CI/CD: requirements.txt references grpc==1.59.0 but package not found on PyPI",
+      "2025-12-05T10:40:00Z INFO  dev-team: Investigating dependency resolution failure",
+      "2025-12-05T10:50:00Z INFO  dev-team: grpc package renamed to grpcio, updating requirements.txt",
+      "2025-12-05T11:00:00Z INFO  CI/CD: Deployment successful for order-service v2.3.2"
+    ],
+    "root_cause": "Incorrect package name 'grpc' in requirements.txt — correct package is 'grpcio'",
+    "resolution": "Fixed requirements.txt with correct package name, redeployed",
+    "tags": ["deployment", "docker", "python", "dependency", "cicd"]
+  },
+  {
+    "id": "INC-004",
+    "title": "Notification Service Memory Leak",
+    "service": "notification-service",
+    "severity": "high",
+    "status": "resolved",
+    "created_at": "2025-12-20T06:00:00Z",
+    "resolved_at": "2025-12-20T09:00:00Z",
+    "logs": [
+      "2025-12-20T06:00:00Z WARN  notification-service: Memory usage at 78% (threshold: 75%)",
+      "2025-12-20T06:30:00Z WARN  notification-service: Memory usage at 88%",
+      "2025-12-20T07:00:00Z ERROR notification-service: Memory usage at 96%, GC pressure high",
+      "2025-12-20T07:15:00Z ERROR notification-service: OOMKilled by Kubernetes",
+      "2025-12-20T07:16:00Z INFO  kubernetes: Pod restarted automatically",
+      "2025-12-20T08:00:00Z INFO  dev-team: Heap dump analysis shows email template objects not being released",
+      "2025-12-20T09:00:00Z INFO  dev-team: Fixed template engine caching bug, deployed v1.4.2"
+    ],
+    "root_cause": "Memory leak in email template rendering engine — template objects were cached indefinitely without eviction",
+    "resolution": "Fixed template cache with TTL-based eviction policy, deployed patch",
+    "tags": ["memory-leak", "kubernetes", "OOMKill", "notification", "template"]
+  },
+  {
+    "id": "INC-005",
+    "title": "API Gateway 502 Bad Gateway Errors",
+    "service": "api-gateway",
+    "severity": "critical",
+    "status": "resolved",
+    "created_at": "2026-01-03T20:00:00Z",
+    "resolved_at": "2026-01-03T20:45:00Z",
+    "logs": [
+      "2026-01-03T20:00:00Z ERROR api-gateway: 502 Bad Gateway on /api/v1/* (error rate: 60%)",
+      "2026-01-03T20:01:00Z ERROR api-gateway: Upstream connect error — user-service:8080 refusing connections",
+      "2026-01-03T20:02:00Z INFO  kubernetes: user-service pods in CrashLoopBackOff state",
+      "2026-01-03T20:05:00Z ERROR user-service: Failed to connect to config-service on startup",
+      "2026-01-03T20:06:00Z ERROR config-service: Pod not running — node disk pressure eviction",
+      "2026-01-03T20:20:00Z INFO  ops-team: Freed disk space on node, config-service pod rescheduled",
+      "2026-01-03T20:40:00Z INFO  user-service: All pods running healthy",
+      "2026-01-03T20:45:00Z INFO  api-gateway: Error rate back to 0%"
+    ],
+    "root_cause": "Node disk pressure caused config-service eviction, which prevented user-service from starting, causing API gateway upstream failures",
+    "resolution": "Freed disk space, added disk pressure alerts, config-service restored",
+    "tags": ["api-gateway", "502", "disk-pressure", "kubernetes", "cascading-failure"]
+  }
+]
